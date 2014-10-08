@@ -1,0 +1,4 @@
+name: celtra-game
+description: HTML5 game for Celtra's challenge
+dependencies:
+  browser: any
