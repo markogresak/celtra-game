@@ -1,5 +1,6 @@
-// Import dart html lib
+// Import dart html and math lib
 import 'dart:html';
+import 'dart:math';
 // --------------------
 
 /// Main game class, doing all the "heavy lifting".
@@ -54,7 +55,7 @@ class Game {
     // If delta is greater than interval, draw next frame.
     if(delta > interval) {
       // Update last time.
-      last = now - (delta % interval);
+      last = now - (delta % interval).floor();
       // Draw next frame.
       __draw(time);
     }
@@ -66,5 +67,6 @@ class Game {
   void __draw(int time) {
     // Clear whole canvas
     ctx.clearRect(0, 0, w, h);
+    ctx.fillRect(0, h * .9, w, h);
   }
 }
