@@ -31,7 +31,7 @@ class Game {
   ///
   /// @param gameCanvas Canvas on which game will be displayed.
   /// @param fps Rate of Frames Per Second.
-  Game(this.gameCanvas, fps) {
+  Game(CanvasElement this.gameCanvas, int fps) {
     // Set rendering context.
     this.ctx = gameCanvas.context2D;
     // Calculate interval based on fps.

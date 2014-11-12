@@ -7,13 +7,13 @@ import 'block.dart';
 class Platform {
 
   // Min and max height constants.
-  static const MIN_HEIGHT = 0;
-  static const MAX_HEIGHT = 127;
+  static const int MIN_HEIGHT = 0;
+  static const int MAX_HEIGHT = 127;
 
   // Direction constants.
-  static const DIRECTION_LEFT = -1;
-  static const DIRECTION_BOTH = 0;
-  static const DIRECTION_RIGHT = 1;
+  static const int DIRECTION_LEFT = -1;
+  static const int DIRECTION_BOTH = 0;
+  static const int DIRECTION_RIGHT = 1;
 
   /// Reference to player object.
   Player player;
