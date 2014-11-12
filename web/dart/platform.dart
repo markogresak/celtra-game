@@ -1,8 +1,9 @@
 import 'dart:math';
+import 'dart:html';
 import 'player.dart';
 import 'block.dart';
 
-/// Player class, stores data about game platform.
+/// Platform class, stores data about game platform.
 class Platform {
 
   // Min and max height constants.
@@ -22,6 +23,10 @@ class Platform {
   Map blocks;
   /// Random block generator.
   BlockGenerator generator;
+  /// Store old block count, width and height.
+  int blockCount, w, h;
+  /// Canvas element for pre-painting blocks on platform.
+  CanvasElement offCanvas;
 
   /// Default constructor.
   ///
@@ -41,6 +46,7 @@ class Platform {
   /// Find limit x coordinate of block in given direction.
   ///
   /// @param direction Direction of search (valid: DIRECTION_LEFT or DIRECTION_RIGHT).
+  /// @returns Limit x coordinate in given direction.
   int __findLimit(int direction) {
     // Do not search if no blocks or only origin block is added.
     if(blocks.length <= 1)
@@ -58,11 +64,15 @@ class Platform {
   }
 
   /// Find lowest x coordinate of block (search in left direction).
+  ///
+  /// @returns Lowest x coordinate.
   int findLowestCoordinate() {
     return __findLimit(DIRECTION_LEFT);
   }
 
   /// Find highest x coordinate of block (search in right direction).
+  ///
+  /// @returns Highest x coordinate.
   int findHighestCoordinate() {
     return __findLimit(DIRECTION_RIGHT);
   }
@@ -90,14 +100,49 @@ class Platform {
     }
   }
 
+  /// Sets fill color to the given canvas context.
+  ///
+  /// @param ctx canvas rendering context.
+  void __setBlockColor(CanvasRenderingContext2D ctx) {
+    ctx.setFillColorRgb(156, 204, 84);
+  }
+
+  /// Check if platform or canvas has updated since last draw.
+  ///
+  /// @returns True if updated, false if not.
+  bool hasUpdated() {
+    // Compare amount of blocks with previously stored block count
+    //  or canvas has resized since last draw.
+    return blocks.length != blockCount || w != player.cw || h != player.ch;
+  }
+
   /// Draw the platform on provided canvas context.
   ///
   /// @param ctx Canvas context on which platform is painted.
   void draw(CanvasRenderingContext2D ctx) {
-    // Calculate baseline of canvas (it can change if canvas is resized).
-    int baseLine = (player.ch * 0.90).floor();
-    // Call draw function of each block.
-    blocks.forEach((k,v) => blocks[k].draw(ctx, player.ch, baseLine));
+    // Check if platform or canvas has updated.
+    if(hasUpdated()) {
+      // Update canvas width and height.
+      w = player.cw;
+      h = player.ch;
+      // Update block count.
+      blockCount = blocks.length;
+      // Calculate baseline of canvas (it can change if canvas is resized).
+      int baseLine = (h * 0.90).floor();
+
+      // Create new canvas element for pre-painting blocks on platform.
+      offCanvas = new CanvasElement(width: w, height: h);
+      // Get offCanvas context.
+      CanvasRenderingContext2D offCtx = offCanvas.context2D;
+      // Set block color.
+      __setBlockColor(offCtx);
+
+      // Draw each block on created offCanvas element
+      blocks.forEach((k,b) => b.draw(offCtx, h, baseLine));
+    }
+
+    // Draw platform on offCanvas to provided (main) canvas.
+    ctx.drawImageScaled(offCanvas, 0, 0, w, h);
   }
 
 }

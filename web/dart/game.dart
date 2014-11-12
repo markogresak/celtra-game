@@ -75,10 +75,7 @@ class Game {
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
-    // Clear whole canvas
-    ctx.clearRect(0, 0, w, h);
-    ctx.setFillColorRgb(156, 204, 84);
-
+    // Draw the platform.
     platform.draw(ctx);
   }
 }
