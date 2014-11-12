@@ -3,15 +3,16 @@ import 'dart:html';
 import 'game.dart';
 // --------------------
 
-class Character {
+/// Player class, stores data about player's avatar.
+class Player {
 
-  // Reference to canvas element
+  // Reference to canvas element.
   Game ref;
-  // Getter for game canvas rendering context
+  // Getter for game canvas rendering context.
   CanvasRenderingContext2D get ctx => ref.ctx;
-  // Getter for game canvas width
+  // Getter for game canvas width.
   int get cw => ref.w;
-  // Getter for game canvas height
+  // Getter for game canvas height.
   int get ch => ref.h;
   // Character position
   Point pos;
@@ -21,7 +22,7 @@ class Character {
   /// Initializes canvas, rendering context and fps rate.
   ///
   /// @param ref Reference to game object.
-  Character(this.ref) {
+  Player(this.ref) {
     w = 64;
     h = 128;
   }
