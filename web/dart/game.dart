@@ -1,7 +1,8 @@
 // Imports
 import 'dart:html';
 import 'dart:math';
-import 'character.dart';
+import 'player.dart';
+import 'platform.dart';
 // --------------------
 
 /// Main game class, doing all the "heavy lifting".
@@ -21,8 +22,10 @@ class Game {
   int now;
   // Last time draw was called, in milliseconds
   int last;
-  // Character object
-  Character char;
+  // Player object
+  Player player;
+  // Map rendering object
+  Platform platform;
 
   /// Initializes canvas, rendering context and fps rate.
   ///
@@ -34,7 +37,9 @@ class Game {
     // Calculate interval based on fps.
     this.interval = 1000 / fps;
     // Initialize new character object
-    this.char = new Character(this);
+    this.player = new Player(this);
+    // Initialize map object
+    this.platform = new Platform(player, "game");
   }
 
   /// Runs the game.
@@ -66,35 +71,6 @@ class Game {
     }
   }
 
-  void drawLine(x1, y1, x2, y2) {
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-  }
-
-  double tanDeg(num x) {
-    return tan(x * PI/180);
-  }
-
-  void drawTriangle(num x1, num y1, num width, num alpha, num beta) {
-    if(!((alpha >= 0 && alpha < 90 && beta == 90) || (alpha == 90 && beta >= 0 && beta < 90)))
-      return;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x1 + width, y1);
-
-
-    num angle = alpha < 90 ? alpha : beta;
-
-    num y2 = y1 - tanDeg(angle) * width;
-    num x2 = alpha < 90 ? x1 + width : x1;
-
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x1, y1);
-    ctx.fill();
-  }
-
   /// Draws game contents on canvas.
   ///
   /// @param time Time passed since game was started.
@@ -102,23 +78,7 @@ class Game {
     // Clear whole canvas
     ctx.clearRect(0, 0, w, h);
     ctx.setFillColorRgb(156, 204, 84);
-    int baseLine = (h * .9).floor();
-//    ctx.fillRect(0, baseLine, w, h);
-//    char.draw(baseLine);
 
-    for(int i = 0; i < w; i += 32)
-      drawLine(i, 0, i, h);
-
-    for(int i = 0; i < h; i += 32)
-      drawLine(0, i, w, i);
-
-    Random r = new Random(1234);
-    for(int i = 0; i < w; i += 32) {
-      int height = (r.nextInt(10) + 1) * 32;
-      ctx.fillRect(i, h - height, 32, height);
-      int alpha = r.nextBool() ? r.nextInt(45) : 90;
-      int beta = alpha == 90 ? r.nextInt(45) : 90;
-      drawTriangle(i, h - height, 32, alpha, beta);
-    }
+    platform.draw(ctx);
   }
 }
