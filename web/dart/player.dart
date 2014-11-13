@@ -1,30 +1,33 @@
 // Imports
 import 'dart:html';
 import 'game.dart';
+import 'movement.dart';
 // --------------------
 
-/// Player class, stores data about player's avatar.
+/// Player class
+/// Stores data about player's avatar.
 class Player {
 
-  // Reference to canvas element.
+  /// Reference to game object.
   Game ref;
-  // Getter for game canvas rendering context.
+  /// Reference to player movement object.
+  Movement movement;
+  /// Getter for game canvas rendering context.
   CanvasRenderingContext2D get ctx => ref.ctx;
-  // Getter for game canvas width.
+  /// Getter for game canvas width.
   int get cw => ref.w;
-  // Getter for game canvas height.
+  /// Getter for game canvas height.
   int get ch => ref.h;
-  // Character position
-  Point pos;
-  // Character width and height
+  /// Character width and height
   int w,h;
 
   /// Initializes canvas, rendering context and fps rate.
   ///
   /// @param ref Reference to game object.
   Player(this.ref) {
-    w = 64;
-    h = 128;
+    w = 32;
+    h = 64;
+    movement = new Movement();
   }
 
   void draw(int baseLine) {
