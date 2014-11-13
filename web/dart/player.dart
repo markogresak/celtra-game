@@ -25,7 +25,7 @@ class Player {
   Player(this.ref) {
     w = 32;
     h = 64;
-    movement = new Movement();
+    movement = new Movement(ref);
   }
 
   /// Draw the player on provided canvas context.
@@ -38,8 +38,8 @@ class Player {
     // Set player paint color.
     ctx.setFillColorRgb(255, 0, 0);
     // Clear old player rect.
-    ctx.clearRect(movement.opx, baseLine - movement.opy - h, w, h);
+    ctx.clearRect(ref.xOrigin + movement.opx, ref.yOrigin - movement.opy - h, w, h);
     // Draw player on new position.
-    ctx.fillRect(movement.px, baseLine - movement.py - h, w, h);
+    ctx.fillRect(ref.xOrigin + movement.px, ref.yOrigin - movement.py - h, w, h);
   }
 }
