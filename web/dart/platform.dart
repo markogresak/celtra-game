@@ -43,6 +43,15 @@ class Platform {
     generatePlatform();
   }
 
+  /// Get height at given x coordinate.
+  ///
+  /// @param x The x coordinate of player.
+  int height(int x) {
+    if(blocks[x] != null)
+      return blocks[x].height;
+    return 0;
+  }
+
   /// Find limit x coordinate of block in given direction.
   ///
   /// @param direction Direction of search (valid: DIRECTION_LEFT or DIRECTION_RIGHT).
@@ -137,7 +146,7 @@ class Platform {
       __setBlockColor(offCtx);
 
       // Draw each block on created offCanvas element
-      blocks.forEach((k,b) => b.draw(offCtx, h, baseLine));
+      blocks.forEach((k,b) => b.draw(offCtx, h, baseLine, player.ref.xOrigin));
     }
 
     // Draw platform on offCanvas to provided (main) canvas.
