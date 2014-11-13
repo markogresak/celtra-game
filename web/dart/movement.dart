@@ -1,7 +1,8 @@
 import 'dart:html';
 import 'dart:collection';
 import 'dart:math';
-
+import 'dart:async';
+import 'platform.dart';
 
 /// MovementKeyList
 /// Extends List with storage for movement key(s) handler function.
@@ -37,13 +38,18 @@ class MovementKeyList<E> extends ListBase<E> {
 /// Stores data about player movement.
 class Movement {
 
-  // Min and max height constants.
-  static const float CAP_VELOCITY_X = 10.0;
+  // Cap speed constants.
+  static const float CAP_VELOCITY_WALK = 7.5;
   static const float CAP_VELOCITY_Y = 15.0;
-  static const float CAP_ACCELERATION_X = 5.0;
+  static const float CAP_VELOCITY_RUN = 15.0;
+  // Acceleration constants.
+  static const float CAP_ACCELERATION_X = 2.0;
   static const float CAP_ACCELERATION_Y = 10.0;
-  static const float INITIAL_ACCELERATION_X = 1.2;
-  static const float ACCELERATION_GRAVITY = -9.8;
+  static const float ACCELERATION_WALK = .5;
+  static const float ACCELERATION_JUMP = 15.0;
+  static const float ACCELERATION_GRAVITY = -5.0;
+  // Jump delay constant (in milliseconds).
+  static const int JUMP_DELAY = 250;
 
   /// Position data.
   int px, py;
@@ -53,8 +59,8 @@ class Movement {
   float ax, ay;
   /// Old position data.
   int opx, opy;
-  /// Is player jumping flag.
-  bool jumping;
+  /// Jump state.
+  bool isJumping;
 
   /// Collection of keys used to move left.
   MovementKeyList<KeyCode> keysLeft;
@@ -66,9 +72,11 @@ class Movement {
   MovementKeyList<KeyCode> keysAttack;
   /// Collection of all keys.
   List<MovementKeyList> allKeys;
+  /// Reference to platform object.
+  Game gameRef;
 
   /// Default constructor.
-  Movement() {
+  Movement(this.gameRef) {
     // Initialize keys lists.
     keysLeft = new MovementKeyList<KeyCode>(playerLeftBegin, playerLeftEnd);
     keysRight = new MovementKeyList<KeyCode>(playerRightBegin, playerRightEnd);
@@ -95,7 +103,7 @@ class Movement {
     vy = 0.0;
     ax = 0.0;
     ay = ACCELERATION_GRAVITY;
-    jumping = false;
+    isJumping = false;
   }
 
   /// Handler function for onKeyDown listener.
@@ -131,8 +139,7 @@ class Movement {
 
   /// Handler function, triggered when one of _keysLeft_ is pressed.
   void playerLeftBegin() {
-    ax = __constrain(ax - INITIAL_ACCELERATION_X, CAP_ACCELERATION_X);
-    vx = __constrain(vx + ax, CAP_VELOCITY_X);
+    ax = __constrain(ax - ACCELERATION_WALK, CAP_ACCELERATION_X);
   }
 
   /// Handler function, triggered when one of _keysLeft_ is released.
@@ -143,8 +150,7 @@ class Movement {
 
   /// Handler function, triggered when one of _keysRight_ is pressed.
   void playerRightBegin() {
-    ax = __constrain(ax + INITIAL_ACCELERATION_X, CAP_ACCELERATION_X);
-    vx = __constrain(vx + ax, CAP_VELOCITY_X);
+    ax = __constrain(ax + ACCELERATION_WALK, CAP_ACCELERATION_X);
   }
 
   /// Handler function, triggered when one of _keysRight_ is released.
@@ -155,19 +161,17 @@ class Movement {
 
   /// Handler function, triggered when one of _keysJump_ is pressed.
   void playerJumpBegin() {
-    if(!jumping) {
-      ay = 20.0;
-      vy = __constrain(vy + ay, CAP_VELOCITY_Y);
-      ay = __constrain(ay + ACCELERATION_GRAVITY, CAP_ACCELERATION_Y);
-      jumping = true;
+    if(!isJumping) {
+      ay = ACCELERATION_JUMP;
+      isJumping = true;
+      new Timer(const Duration(milliseconds: JUMP_DELAY), () => isJumping = false);
     }
   }
 
   /// Handler function, triggered when one of _keysJump_ is released.
   void playerJumpEnd() {
-    ay = ACCELERATION_GRAVITY;
-    vy = 0.0;
-    jumping = false;
+    /// ay = ACCELERATION_GRAVITY;
+    /// vy = 0.0;
   }
 
   /// Handler function, triggered when one of _keysAttack_ is pressed.
@@ -180,12 +184,41 @@ class Movement {
     print("end attack");
   }
 
+  /// Get block height on given x coordinate.
+  ///
+  /// @param x The x coordinate of player.
+  /// @returns The x coordinate of block (~player.x / 32).
+  int blockHeight(int x) {
+    // Get approximate location of the block.
+    float block = x / gameRef.player.w;
+    // Calculate left and right edges of the block on which player is standing on.
+    int leftEdge = gameRef.platform.height(block.floor());
+    int rightEdge = gameRef.platform.height(block.ceil());
+    // Return maximum of the two edges (higher edge).
+    return max(leftEdge, rightEdge);
+  }
+
   /// Updates position and movement data.
+  ///
+  /// @returns True if update was successful, false otherwise.
   bool update() {
+    // Store prevous player position data.
     opx = px;
     opy = py;
+    // Calculate velocity on x axis, constrained to CAP_VELOCITY_WALK.
+    vx = __constrain(vx + ax, CAP_VELOCITY_WALK);
+    // Calculate velocity on y axis, constrained to CAP_VELOCITY_Y.
+    vy = __constrain(vy + ay, CAP_VELOCITY_Y);
+    // Calculate acceleration on y axis, reduce it by value of gravity constant or
+    //  set it to the value of ACCELERATION_GRAVITY (gravity constant).
+    ay = ay > ACCELERATION_GRAVITY ? ay + ACCELERATION_GRAVITY : ACCELERATION_GRAVITY;
+    // Add current velocity on x axis to player's x coordinate.
     px += vx.floor();
-    py += vy.floor();
+    // Add greater value of velocity on y axis added to player's y coordinate and
+    //  height of block player is currently standing on. This is used to
+    //  prevent player getting stuck in ground.
+    py = max(py + vy,  blockHeight(px) * gameRef.player.w).floor();
+    // Return whether player position has updated or not.
     return opx != px || opy != py;
   }
 }
