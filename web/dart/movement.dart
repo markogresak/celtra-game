@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:collection';
+import 'dart:math';
 
 
 /// MovementKeyList
@@ -41,14 +42,19 @@ class Movement {
   static const float CAP_VELOCITY_Y = 15.0;
   static const float CAP_ACCELERATION_X = 5.0;
   static const float CAP_ACCELERATION_Y = 10.0;
+  static const float INITIAL_ACCELERATION_X = 1.2;
   static const float ACCELERATION_GRAVITY = -9.8;
 
   /// Position data.
-  Point pos;
+  int px, py;
   /// Velocity data.
   float vx, vy;
   /// Acceleration data.
   float ax, ay;
+  /// Old position data.
+  int opx, opy;
+  /// Is player jumping flag.
+  bool jumping;
 
   /// Collection of keys used to move left.
   MovementKeyList<KeyCode> keysLeft;
@@ -61,13 +67,8 @@ class Movement {
   /// Collection of all keys.
   List<MovementKeyList> allKeys;
 
-  /// Default constructor, accepts optional argumets of velocity and/or acceleration.
-  ///
-  /// @param vx (optional) Velocity on x coordinate [default = 0].
-  /// @param vy (optional) Velocity on y coordinate [default = 0].
-  /// @param ax (optional) Acceleration on x coordinate [default = 0].
-  /// @param ay (optional) Acceleration on y coordinate [default = 0].
-  Movement([float this.vx = 0.0, float this.vy = 0.0, float this.ax = 0.0, float this.ay = ACCELERATION_GRAVITY]) {
+  /// Default constructor.
+  Movement() {
     // Initialize keys lists.
     keysLeft = new MovementKeyList<KeyCode>(playerLeftBegin, playerLeftEnd);
     keysRight = new MovementKeyList<KeyCode>(playerRightBegin, playerRightEnd);
@@ -87,6 +88,14 @@ class Movement {
     // Add key event listeners.
     window.onKeyDown.listen(__checkKeyDown);
     window.onKeyUp.listen(__checkKeyUp);
+
+    opx = px = 0;
+    opx = py = 0;
+    vx = 0.0;
+    vy = 0.0;
+    ax = 0.0;
+    ay = ACCELERATION_GRAVITY;
+    jumping = false;
   }
 
   /// Handler function for onKeyDown listener.
@@ -115,15 +124,15 @@ class Movement {
     // Store sign of val.
     float sign = val.sign;
     // Multiply val by it's sign (to get absolute value).
-    val *= sign;
+    float _val = val * sign;
     // Return minimal of the two values, multiplied with sign to get back original sign.
-    return min(val, cap) * sign;
+    return min(_val, cap) * sign;
   }
 
   /// Handler function, triggered when one of _keysLeft_ is pressed.
   void playerLeftBegin() {
-    ax = __constrain(ax - ax, CAP_ACCELERATION_X);
-    vx = __constrain(vx - ax, CAP_VELOCITY_X);
+    ax = __constrain(ax - INITIAL_ACCELERATION_X, CAP_ACCELERATION_X);
+    vx = __constrain(vx + ax, CAP_VELOCITY_X);
   }
 
   /// Handler function, triggered when one of _keysLeft_ is released.
@@ -134,7 +143,7 @@ class Movement {
 
   /// Handler function, triggered when one of _keysRight_ is pressed.
   void playerRightBegin() {
-    ax = __constrain(ax + ax, CAP_ACCELERATION_X);
+    ax = __constrain(ax + INITIAL_ACCELERATION_X, CAP_ACCELERATION_X);
     vx = __constrain(vx + ax, CAP_VELOCITY_X);
   }
 
@@ -146,15 +155,19 @@ class Movement {
 
   /// Handler function, triggered when one of _keysJump_ is pressed.
   void playerJumpBegin() {
-    ay = 20.0;
-    vy = __constrain(vy + ay, CAP_VELOCITY_Y);
-    ay = __constrain(ay + ACCELERATION_GRAVITY, CAP_ACCELERATION_Y);
+    if(!jumping) {
+      ay = 20.0;
+      vy = __constrain(vy + ay, CAP_VELOCITY_Y);
+      ay = __constrain(ay + ACCELERATION_GRAVITY, CAP_ACCELERATION_Y);
+      jumping = true;
+    }
   }
 
   /// Handler function, triggered when one of _keysJump_ is released.
   void playerJumpEnd() {
     ay = ACCELERATION_GRAVITY;
     vy = 0.0;
+    jumping = false;
   }
 
   /// Handler function, triggered when one of _keysAttack_ is pressed.
@@ -168,9 +181,12 @@ class Movement {
   }
 
   /// Updates position and movement data.
-  void update() {
-    pos.x += vx.floor();
-    pos.y += vy.floor();
+  bool update() {
+    opx = px;
+    opy = py;
+    px += vx.floor();
+    py += vy.floor();
+    return opx != px || opy != py;
   }
 }
 

@@ -12,8 +12,6 @@ class Player {
   Game ref;
   /// Reference to player movement object.
   Movement movement;
-  /// Getter for game canvas rendering context.
-  CanvasRenderingContext2D get ctx => ref.ctx;
   /// Getter for game canvas width.
   int get cw => ref.w;
   /// Getter for game canvas height.
@@ -30,8 +28,18 @@ class Player {
     movement = new Movement();
   }
 
-  void draw(int baseLine) {
+  /// Draw the player on provided canvas context.
+  ///
+  /// @param ctx Canvas context on which player is painted.
+  /// @param baseLine Baseline (y = 0) of platform.
+  void draw(CanvasRenderingContext2D ctx, int baseLine) {
+    // Update movement data.
+    movement.update();
+    // Set player paint color.
     ctx.setFillColorRgb(255, 0, 0);
-    ctx.fillRect(cw / 2, baseLine - h, w, h);
+    // Clear old player rect.
+    ctx.clearRect(movement.opx, baseLine - movement.opy - h, w, h);
+    // Draw player on new position.
+    ctx.fillRect(movement.px, baseLine - movement.py - h, w, h);
   }
 }
