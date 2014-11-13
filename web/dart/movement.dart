@@ -40,7 +40,8 @@ class Movement {
   static const float CAP_VELOCITY_X = 10.0;
   static const float CAP_VELOCITY_Y = 15.0;
   static const float CAP_ACCELERATION_X = 5.0;
-  static const float CAP_ACCELERATION_Y = -9.8;
+  static const float CAP_ACCELERATION_Y = 10.0;
+  static const float ACCELERATION_GRAVITY = -9.8;
 
   /// Position data.
   Point pos;
@@ -66,12 +67,12 @@ class Movement {
   /// @param vy (optional) Velocity on y coordinate [default = 0].
   /// @param ax (optional) Acceleration on x coordinate [default = 0].
   /// @param ay (optional) Acceleration on y coordinate [default = 0].
-  Movement(float this.vx = 0.0, float this.vy = 0.0, float this.ax = 0.0, float this.ay = 0.0]) {
+  Movement([float this.vx = 0.0, float this.vy = 0.0, float this.ax = 0.0, float this.ay = ACCELERATION_GRAVITY]) {
     // Initialize keys lists.
-    keysLeft = new MovementKeyList<KeyCode>(() => playerLeftBegin(), () => playerLeftEnd());
-    keysRight = new MovementKeyList<KeyCode>(() => playerRightBegin(), () => playerRightEnd());
-    keysJump = new MovementKeyList<KeyCode>(() => playerJumpBegin(), () => playerJumpEnd());
-    keysAttack = new MovementKeyList<KeyCode>(() => playerAttackBegin(), () => playerAttackEnd());
+    keysLeft = new MovementKeyList<KeyCode>(playerLeftBegin, playerLeftEnd);
+    keysRight = new MovementKeyList<KeyCode>(playerRightBegin, playerRightEnd);
+    keysJump = new MovementKeyList<KeyCode>(playerJumpBegin, playerJumpEnd);
+    keysAttack = new MovementKeyList<KeyCode>(playerAttackBegin, playerAttackEnd);
     allKeys = new List<MovementKeyList>();
 
     // Add corresponding keys to list.
@@ -127,6 +128,7 @@ class Movement {
 
   /// Handler function, triggered when one of _keysLeft_ is released.
   void playerLeftEnd() {
+    ax = 0.0;
     vx = 0.0;
   }
 
@@ -138,17 +140,21 @@ class Movement {
 
   /// Handler function, triggered when one of _keysRight_ is released.
   void playerRightEnd() {
+    ax = 0.0;
     vx = 0.0;
   }
 
   /// Handler function, triggered when one of _keysJump_ is pressed.
   void playerJumpBegin() {
-    print("begin jump");
+    ay = 20.0;
+    vy = __constrain(vy + ay, CAP_VELOCITY_Y);
+    ay = __constrain(ay + ACCELERATION_GRAVITY, CAP_ACCELERATION_Y);
   }
 
   /// Handler function, triggered when one of _keysJump_ is released.
   void playerJumpEnd() {
-    print("end jump");
+    ay = ACCELERATION_GRAVITY;
+    vy = 0.0;
   }
 
   /// Handler function, triggered when one of _keysAttack_ is pressed.
@@ -163,8 +169,8 @@ class Movement {
 
   /// Updates position and movement data.
   void update() {
-    pos.x += vx;
-    pos.y += vy;
+    pos.x += vx.floor();
+    pos.y += vy.floor();
   }
 }
 
