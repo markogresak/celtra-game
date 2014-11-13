@@ -21,9 +21,9 @@ class Block {
   /// @param ctx Canvas context on which block is painted.
   /// @canvasHeight Height of game canvas.
   /// @baseLine Baseline, or minimum height of block.
-  void draw(CanvasRenderingContext2D ctx, int canvasHeight, int baseLine) {
+  void draw(CanvasRenderingContext2D ctx, int canvasHeight, int baseLine, int xOrigin) {
     int h = height * 32;
-    ctx.fillRect(x * 32, baseLine - h, 32, h + (canvasHeight - baseLine));
+    ctx.fillRect(xOrigin + x * 32, baseLine - h, 32, h + (canvasHeight - baseLine));
   }
 }
 
