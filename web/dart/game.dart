@@ -5,26 +5,33 @@ import 'player.dart';
 import 'platform.dart';
 // --------------------
 
-/// Main game class, doing all the "heavy lifting".
+/// Main game class
+/// Doing all the "heavy lifting".
 class Game {
 
-  // Reference to canvas element
+  /// Reference to canvas element.
   CanvasElement gameCanvas;
-  // Canvas rendering context
+  /// Canvas rendering context.
   CanvasRenderingContext2D ctx;
-  // Getter for game canvas width
+  /// Getter for game canvas width.
   int get w => gameCanvas.width;
-  // Getter for game canvas height
+  /// Getter for game canvas height.
   int get h => gameCanvas.height;
-  // Draw interval, in milliseconds
+  /// Calculate baseline of canvas (it can change if canvas is resized).
+  int get baseLine => (h * 0.90).floor();
+  /// Origin of x coordinate (x = 0).
+  int get xOrigin => (w / 2).floor();
+  /// Origin of y coordinate (y = 0).
+  int get yOrigin => baseLine;
+  /// Draw interval, in milliseconds.
   double interval;
-  // Current time, in milliseconds
+  /// Current time, in milliseconds.
   int now;
-  // Last time draw was called, in milliseconds
+  /// Last time draw was called, in milliseconds.
   int last;
-  // Player object
+  /// Player object.
   Player player;
-  // Map rendering object
+  /// Map rendering object.
   Platform platform;
 
   /// Initializes canvas, rendering context and fps rate.
@@ -36,10 +43,10 @@ class Game {
     this.ctx = gameCanvas.context2D;
     // Calculate interval based on fps.
     this.interval = 1000 / fps;
-    // Initialize new character object
+    // Initialize new character object.
     this.player = new Player(this);
-    // Initialize map object
-    this.platform = new Platform(player, "game");
+    // Initialize platform object.
+    this.platform = new Platform(player, "Test Game");
   }
 
   /// Runs the game.
@@ -75,8 +82,6 @@ class Game {
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
-    // Calculate baseline of canvas (it can change if canvas is resized).
-    int baseLine = (h * 0.90).floor();
     // Draw the platform.
     platform.draw(ctx, baseLine);
     // Draw the player.
