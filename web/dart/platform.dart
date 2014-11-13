@@ -119,7 +119,8 @@ class Platform {
   /// Draw the platform on provided canvas context.
   ///
   /// @param ctx Canvas context on which platform is painted.
-  void draw(CanvasRenderingContext2D ctx) {
+  /// @param baseLine Baseline (y = 0) of platform.
+  void draw(CanvasRenderingContext2D ctx, int baseLine) {
     // Check if platform or canvas has updated.
     if(hasUpdated()) {
       // Update canvas width and height.
@@ -127,8 +128,6 @@ class Platform {
       h = player.ch;
       // Update block count.
       blockCount = blocks.length;
-      // Calculate baseline of canvas (it can change if canvas is resized).
-      int baseLine = (h * 0.90).floor();
 
       // Create new canvas element for pre-painting blocks on platform.
       offCanvas = new CanvasElement(width: w, height: h);

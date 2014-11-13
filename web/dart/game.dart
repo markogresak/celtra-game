@@ -75,7 +75,11 @@ class Game {
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
+    // Calculate baseline of canvas (it can change if canvas is resized).
+    int baseLine = (h * 0.90).floor();
     // Draw the platform.
-    platform.draw(ctx);
+    platform.draw(ctx, baseLine);
+    // Draw the player.
+    player.draw(ctx, baseLine);
   }
 }
