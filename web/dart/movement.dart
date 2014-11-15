@@ -214,6 +214,10 @@ class Movement {
     ay = ay > ACCELERATION_GRAVITY ? ay + ACCELERATION_GRAVITY : ACCELERATION_GRAVITY;
     // Add current velocity on x axis to player's x coordinate.
     px += vx.floor();
+    // Calculate half of canvas width (edges).
+    int halfWidth = (gameRef.w / 64.0).floor() * 32;
+    // Constrain player position to the edges of canvas.
+    px = min(max(px, -halfWidth), halfWidth - gameRef.player.w);
     // Add greater value of velocity on y axis added to player's y coordinate and
     //  height of block player is currently standing on. This is used to
     //  prevent player getting stuck in ground.
