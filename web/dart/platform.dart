@@ -139,7 +139,12 @@ class Platform {
       blockCount = blocks.length;
 
       // Create new canvas element for pre-painting blocks on platform.
-      offCanvas = new CanvasElement(width: w, height: h);
+      if(offCanvas != null) {
+        offCanvas.width = w;
+        offCanvas.height = h;
+      }
+      else
+        offCanvas = new CanvasElement(width: w, height: h);
       // Get offCanvas context.
       CanvasRenderingContext2D offCtx = offCanvas.context2D;
       // Set block color.
