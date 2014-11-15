@@ -46,10 +46,10 @@ class Movement {
   static const float CAP_ACCELERATION_X = 2.0;
   static const float CAP_ACCELERATION_Y = 10.0;
   static const float ACCELERATION_WALK = .5;
-  static const float ACCELERATION_JUMP = 15.0;
+  static const float ACCELERATION_JUMP = 20.0;
   static const float ACCELERATION_GRAVITY = -5.0;
   // Jump delay constant (in milliseconds).
-  static const int JUMP_DELAY = 250;
+  static const int JUMP_DELAY = 300;
 
   /// Position data.
   int px, py;
