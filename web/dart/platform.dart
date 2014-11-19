@@ -109,6 +109,15 @@ class Platform {
     }
   }
 
+  void checkExtendPlatform() {
+    int px = player.movement.px;
+    int playerDirection = px.sign;
+    int limit = __findLimit(playerDirection);
+
+    if((limit / 2) < px)
+      generatePlatform(100, playerDirection);
+  }
+
   /// Sets fill color to the given canvas context.
   ///
   /// @param ctx canvas rendering context.
@@ -129,14 +138,21 @@ class Platform {
   ///
   /// @param ctx Canvas context on which platform is painted.
   /// @param baseLine Baseline (y = 0) of platform.
-  void draw(CanvasRenderingContext2D ctx, int baseLine) {
+  void draw(CanvasRenderingContext2D ctx, int baseLine, int xOrigin, bool playerUpdated) {
     // Check if platform or canvas has updated.
-    if(hasUpdated()) {
+    if(playerUpdated || hasUpdated()) {
+      // Check if player is over 1/2 of platform in current direction, if true,
+      //  generate more blocks in given direction.
+      checkExtendPlatform();
+
       // Update canvas width and height.
       w = player.cw;
       h = player.ch;
       // Update block count.
       blockCount = blocks.length;
+
+      // Clear original canvas.
+      ctx.clearRect(0, 0, w, h);
 
       // Create new canvas element for pre-painting blocks on platform.
       if(offCanvas != null) {
@@ -151,7 +167,9 @@ class Platform {
       __setBlockColor(offCtx);
 
       // Draw each block on created offCanvas element
-      blocks.forEach((k,b) => b.draw(offCtx, h, baseLine, player.ref.xOrigin));
+      blocks.forEach((k,b) => b.draw(offCtx, h, baseLine, xOrigin));
+
+      player.draw(ctx, baseLine);
     }
 
     // Draw platform on offCanvas to provided (main) canvas.
