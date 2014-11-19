@@ -85,17 +85,15 @@ class Movement {
 
   /// Handler function, triggered when one of _keysJump_ is pressed.
   void playerJumpBegin() {
-    if(!isJumping) {
-      ay = ACCELERATION_JUMP;
-      isJumping = true;
-      new Timer(const Duration(milliseconds: JUMP_DELAY), () => isJumping = false);
-    }
+    /// if(!isJumping) {
+    ///   ay = ACCELERATION_JUMP;
+    ///   isJumping = true;
+    ///   new Timer(const Duration(milliseconds: JUMP_DELAY), () => isJumping = false);
+    /// }
   }
 
   /// Handler function, triggered when one of _keysJump_ is released.
   void playerJumpEnd() {
-    /// ay = ACCELERATION_GRAVITY;
-    /// vy = 0.0;
   }
 
   /// Handler function, triggered when one of _keysAttack_ is pressed.
