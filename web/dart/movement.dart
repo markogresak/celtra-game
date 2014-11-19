@@ -1,38 +1,8 @@
 import 'dart:html';
-import 'dart:collection';
 import 'dart:math';
 import 'dart:async';
 import 'platform.dart';
-
-/// MovementKeyList
-/// Extends List with storage for movement key(s) handler function.
-class MovementKeyList<E> extends ListBase<E> {
-
-  List innerList = new List();
-
-  /// KeyDown event handler function.
-  Function keyDownHandler;
-  /// KeyUp event handler function.
-  Function keyUpHandler;
-
-  /// Default constructor, Initializes handler function and calls list constructor.
-  MovementKeyList(this.keyDownHandler, this.keyUpHandler);
-
-  // Length setter and getter.
-  int get length => innerList.length;
-  void set length(int length) =>innerList.length = length;
-
-  // [] operator getter and setter.
-  E operator [](int index) => innerList[index];
-  void operator[]=(int index, E value) => innerList[index] = value;
-
-  /// Add an element to list.
-  void add(E value) => innerList.add(value);
-
-  /// Add a list of elements to list.
-  void addAll(Iterable<E> all) => innerList.addAll(all);
-}
-
+import 'controls.dart';
 
 /// Movement
 /// Stores data about player movement.
@@ -61,66 +31,27 @@ class Movement {
   int opx, opy;
   /// Jump state.
   bool isJumping;
+  /// Controls object
+  Controls controls;
 
-  /// Collection of keys used to move left.
-  MovementKeyList<KeyCode> keysLeft;
-  /// Collection of keys used to move right.
-  MovementKeyList<KeyCode> keysRight;
-  /// Collection of keys used to jump.
-  MovementKeyList<KeyCode> keysJump;
-  /// Collection of keys used to attack.
-  MovementKeyList<KeyCode> keysAttack;
-  /// Collection of all keys.
-  List<MovementKeyList> allKeys;
   /// Reference to platform object.
   Game gameRef;
 
   /// Default constructor.
   Movement(this.gameRef) {
-    // Initialize keys lists.
-    keysLeft = new MovementKeyList<KeyCode>(playerLeftBegin, playerLeftEnd);
-    keysRight = new MovementKeyList<KeyCode>(playerRightBegin, playerRightEnd);
-    keysJump = new MovementKeyList<KeyCode>(playerJumpBegin, playerJumpEnd);
-    keysAttack = new MovementKeyList<KeyCode>(playerAttackBegin, playerAttackEnd);
-    allKeys = new List<MovementKeyList>();
-
-    // Add corresponding keys to list.
-    keysLeft.addAll([KeyCode.LEFT, KeyCode.A]);
-    keysRight.addAll([KeyCode.RIGHT, KeyCode.D]);
-    keysJump.addAll([KeyCode.UP, KeyCode.W]);
-    keysAttack.addAll([KeyCode.SPACE]);
-
-    // Store all keys.
-    allKeys.addAll([keysLeft, keysRight, keysJump, keysAttack]);
-
-    // Add key event listeners.
-    window.onKeyDown.listen(__checkKeyDown);
-    window.onKeyUp.listen(__checkKeyUp);
-
+    // Initialize controls object.
+    controls = new Controls(this);
+    // Initialize player old and curent locations.
     opx = px = 0;
     opx = py = 0;
+    // Initialize player velocity data.
     vx = 0.0;
     vy = 0.0;
+    // Initialize player acceleration data.
     ax = 0.0;
     ay = ACCELERATION_GRAVITY;
+    // Initialize player jumping state.
     isJumping = false;
-  }
-
-  /// Handler function for onKeyDown listener.
-  void __checkKeyDown(KeyboardEvent e) {
-    //
-    allKeys.forEach((keyList) => keyList.forEach((key) {
-      if(key == e.keyCode)
-        return keyList.keyDownHandler();
-    }));
-  }
-
-  /// Handler function for onKeyUp listener.
-  void __checkKeyUp(KeyboardEvent e) {
-    allKeys.forEach((keyList) => keyList.forEach((key) {
-      if(key == e.keyCode)
-        return keyList.keyUpHandler();
-    }));
   }
 
   /// Returns _val_ constrained to _cap_ (works for positive and negative values).
@@ -141,20 +72,13 @@ class Movement {
   void playerLeftBegin() {
     ax = __constrain(ax - ACCELERATION_WALK, CAP_ACCELERATION_X);
   }
-
-  /// Handler function, triggered when one of _keysLeft_ is released.
-  void playerLeftEnd() {
-    ax = 0.0;
-    vx = 0.0;
-  }
-
   /// Handler function, triggered when one of _keysRight_ is pressed.
   void playerRightBegin() {
     ax = __constrain(ax + ACCELERATION_WALK, CAP_ACCELERATION_X);
   }
 
-  /// Handler function, triggered when one of _keysRight_ is released.
-  void playerRightEnd() {
+  /// Handler function, triggered when one of player movement keys is released.
+  void playerMoveStop() {
     ax = 0.0;
     vx = 0.0;
   }
