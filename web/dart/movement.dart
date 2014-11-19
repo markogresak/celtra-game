@@ -39,9 +39,9 @@ class MovementKeyList<E> extends ListBase<E> {
 class Movement {
 
   // Cap speed constants.
-  static const float CAP_VELOCITY_WALK = 7.5;
+  static const float CAP_VELOCITY_WALK = 5.0;
   static const float CAP_VELOCITY_Y = 15.0;
-  static const float CAP_VELOCITY_RUN = 15.0;
+  static const float CAP_VELOCITY_RUN = 7.5;
   // Acceleration constants.
   static const float CAP_ACCELERATION_X = 2.0;
   static const float CAP_ACCELERATION_Y = 10.0;
