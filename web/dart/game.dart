@@ -82,9 +82,10 @@ class Game {
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
-    // Draw the platform.
-    platform.draw(ctx, baseLine);
     // Draw the player.
-    player.draw(ctx, baseLine);
+    bool playerUpdated = player.draw(ctx, baseLine);
+    // Draw the platform.
+    platform.draw(ctx, baseLine, xOrigin - player.movement.px, playerUpdated);
+
   }
 }
