@@ -32,14 +32,16 @@ class Player {
   ///
   /// @param ctx Canvas context on which player is painted.
   /// @param baseLine Baseline (y = 0) of platform.
-  void draw(CanvasRenderingContext2D ctx, int baseLine) {
+  bool draw(CanvasRenderingContext2D ctx, int baseLine) {
     // Update movement data.
-    movement.update();
+    bool result = movement.update();
     // Set player paint color.
     ctx.setFillColorRgb(255, 0, 0);
     // Clear old player rect.
-    ctx.clearRect(ref.xOrigin + movement.opx, ref.yOrigin - movement.opy - h, w, h);
+    ctx.clearRect(ref.xOrigin, ref.yOrigin - movement.opy - h, w, h);
     // Draw player on new position.
-    ctx.fillRect(ref.xOrigin + movement.px, ref.yOrigin - movement.py - h, w, h);
+    ctx.fillRect(ref.xOrigin, ref.yOrigin - movement.py - h, w, h);
+
+    return result;
   }
 }
