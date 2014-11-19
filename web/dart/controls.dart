@@ -1,8 +1,10 @@
 import 'dart:html';
 import 'dart:collection';
 import 'movement.dart';
+import 'platform.dart';
 
-
+/// Controls
+///
 class Controls {
 
   // Reference to movement object.
@@ -39,12 +41,20 @@ class Controls {
 
     // Initialize keyboard events.
     __initKeyEvents();
+
+        // Initialize touch events.
+    __initTouchEvents();
   }
 
   void __initKeyEvents() {
     // Add key event listeners.
     window.onKeyDown.listen(__checkKeyDown);
     window.onKeyUp.listen(__checkKeyUp);
+  }
+
+  void __initTouchEvents() {
+    document.onTouchStart.listen(__onTouchStart);
+    document.onTouchEnd.listen(__onTouchEnd);
   }
 
   /// Handler function for onKeyDown listener.
@@ -63,6 +73,33 @@ class Controls {
     }));
   }
 
+  /// Handler function for touch start event listener.
+  void __onTouchStart(TouchEvent e) {
+    // Prevent posible default action.
+    e.preventDefault();
+
+    // If there were touch events recorded.
+    if (e.touches.length > 0) {
+      // Get touch location.
+      int touchLocation = e.touches[0].page.x;
+      // Calculate screen half.
+      int screenHalf = (movementRef.gameRef.w / 2).floor();
+      // Determine player movement location.
+      int movementDirection = (touchLocation - screenHalf).sign;
+      // If player movement direction is DIRECTION_LEFT, move player to left.
+      if(movementDirection == Platform.DIRECTION_LEFT)
+        movementRef.playerLeftBegin();
+      // If player movement direction is DIRECTION_RIGHT, move player to right.
+      else if(movementDirection == Platform.DIRECTION_RIGHT)
+        movementRef.playerRightBegin();
+    }
+  }
+
+  /// Handler function for touch end event listener.
+  void __onTouchEnd(TouchEvent e) {
+    // Stop player movement.
+    movementRef.playerMoveStop();
+  }
 }
 
 
