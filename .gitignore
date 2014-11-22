@@ -15,3 +15,7 @@ pubspec.lock
 
 # IntelliJ (WebStorm) files
 .idea*
+
+# Emacs
+*\#*
+

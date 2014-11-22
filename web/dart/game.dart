@@ -1,35 +1,52 @@
-// Import dart html and math lib
+// Imports
 import 'dart:html';
 import 'dart:math';
+import 'player.dart';
+import 'platform.dart';
 // --------------------
 
-/// Main game class, doing all the "heavy lifting".
+/// Main game class
+/// Doing all the "heavy lifting".
 class Game {
 
-  // Reference to canvas element
+  /// Reference to canvas element.
   CanvasElement gameCanvas;
-  // Canvas rendering context
+  /// Canvas rendering context.
   CanvasRenderingContext2D ctx;
-  // Getter for game canvas width
+  /// Getter for game canvas width.
   int get w => gameCanvas.width;
-  // Getter for game canvas height
+  /// Getter for game canvas height.
   int get h => gameCanvas.height;
-  // Draw interval, in milliseconds
+  /// Calculate baseline of canvas (it can change if canvas is resized).
+  int get baseLine => (h * 0.90).floor();
+  /// Origin of x coordinate (x = 0).
+  int get xOrigin => (w / 2).floor();
+  /// Origin of y coordinate (y = 0).
+  int get yOrigin => baseLine;
+  /// Draw interval, in milliseconds.
   double interval;
-  // Current time, in milliseconds
+  /// Current time, in milliseconds.
   int now;
-  // Last time draw was called, in milliseconds
+  /// Last time draw was called, in milliseconds.
   int last;
+  /// Player object.
+  Player player;
+  /// Map rendering object.
+  Platform platform;
 
   /// Initializes canvas, rendering context and fps rate.
   ///
   /// @param gameCanvas Canvas on which game will be displayed.
   /// @param fps Rate of Frames Per Second.
-  Game(this.gameCanvas, fps) {
+  Game(CanvasElement this.gameCanvas, int fps) {
     // Set rendering context.
     this.ctx = gameCanvas.context2D;
     // Calculate interval based on fps.
     this.interval = 1000 / fps;
+    // Initialize new character object.
+    this.player = new Player(this);
+    // Initialize platform object.
+    this.platform = new Platform(player, "Test Game");
   }
 
   /// Runs the game.
@@ -42,7 +59,7 @@ class Game {
 
   /// Game loop, responsible for all calculations and updates.
   /// This function should be called using requestAnimationFrame.
-  RequestAnimationFrameCallback __gameloop(int time) {
+  void __gameloop(double time) {
 
     // Request next animation frame.
     window.requestAnimationFrame(__gameloop);
@@ -64,9 +81,11 @@ class Game {
   /// Draws game contents on canvas.
   ///
   /// @param time Time passed since game was started.
-  void __draw(int time) {
-    // Clear whole canvas
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillRect(0, h * .9, w, h);
+  void __draw(double time) {
+    // Draw the player.
+    bool playerUpdated = player.draw(ctx, baseLine);
+    // Draw the platform.
+    platform.draw(ctx, baseLine, xOrigin - player.movement.px, playerUpdated);
+
   }
 }
