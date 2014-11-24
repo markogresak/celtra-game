@@ -17,10 +17,25 @@ html, body {
 
 .container {
   display: none;
+  background: #7EC0EE;
 }
 
 canvas {
   display: block;
+}
+
+#attack {
+  display: none;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  width: 20%;
+  height: 15%;
+  border: none;
+  border-radius: 4px;
+  background: #8A0707;
+  color: #fff;
+  font-size: 2em;
 }
 
 .login-container {
