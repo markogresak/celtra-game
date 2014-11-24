@@ -7,11 +7,60 @@ html, body {
   width: 100%;
   height: 100%;
   background-color: #F8F8F8;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.container, canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: none;
 }
 
 canvas {
   display: block;
 }
 
+.login-container {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
+.inputs {
+  width: 366px;
+  height: 44px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -183px;
+  margin-top: -22px;
+}
 
+.input {
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 4px;
+  border: none;
+  border-bottom: 1px solid #555;
+  background: #ccc;
+  color: #333;
+}
+
+::-webkit-input-placeholder {
+   color: #fff;
+}
+
+:-moz-placeholder {
+   color: #fff;
+}
+
+::-moz-placeholder {
+   color: #fff;
+}
+
+:-ms-input-placeholder {
+   color: #fff;
+}

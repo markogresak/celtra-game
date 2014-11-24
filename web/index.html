@@ -11,7 +11,16 @@
 
     <link rel="stylesheet" href="css/main.css">
   </head>
-  <body>
+  <body onload="if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {document.querySelector('body').className = 'mobile'}">
+
+    <div class="login-container">
+        <span class="inputs">
+          <form id="form-login" action="#">
+            <input class="input" type="text" id="username" name="username" placeholder="Username" maxlength="10">
+            <button class="input">Start game</button>
+          </form>
+        </span>
+    </div>
 
     <div class="container">
         <canvas id="game"></canvas>
