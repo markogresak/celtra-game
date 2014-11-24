@@ -8,7 +8,7 @@ class Platform {
 
   // Min and max height constants.
   static const int MIN_HEIGHT = 0;
-  static const int MAX_HEIGHT = 127;
+  static const int MAX_HEIGHT = 10;
 
   // Direction constants.
   static const int DIRECTION_LEFT = -1;
@@ -91,22 +91,47 @@ class Platform {
   /// @param blockAmount (optional) Amount of blocks to generate [default = 100].
   /// @param direction (optional) Direction in which blocks are generated [default = DIRECTION_BOTH].
   void generatePlatform([int blockAmount = 100, int direction = DIRECTION_BOTH]) {
+    List<int> generatedIndexes = new List<int>();
     // If generating in right (or both) direction.
     if(direction == DIRECTION_RIGHT || direction == DIRECTION_BOTH) {
       // Find current right x coordinate limit.
       int startRight = findHighestCoordinate();
       // Generate _blockAmount_ blocks, starting at the block right to current.
-      for(int i = startRight + 1; i <= startRight + blockAmount; i++)
+      for(int i = startRight + 1; i <= startRight + blockAmount; i++) {
         blocks[i] = generator.nextRight(blocks[i - 1]);
+        generatedIndexes.add(i);
+      }
     }
     // If generating in left (or both) direction.
     if(direction == DIRECTION_LEFT || direction == DIRECTION_BOTH) {
       // Find current left x coordinate limit.
       int startLeft = findLowestCoordinate();
       // Generate _blockAmount_ blocks, starting at the block left to current.
-      for(int i = startLeft; i > startLeft - blockAmount; i--)
+      for(int i = startLeft; i > startLeft - blockAmount; i--) {
         blocks[i] = generator.nextLeft(blocks[i + 1]);
+        generatedIndexes.add(i);
+      }
     }
+    fillGaps(generatedIndexes);
+  }
+
+  /// Fill 1 block wide holes (fixes walk over glitch).
+  ///
+  /// @param indexList List of indexes to check.
+  void fillGaps(List<int> indexList) {
+    // Loop through all indexes.
+    indexList.forEach((i) {
+      // Save current height.
+      int curHeight = blocks[i].height;
+      // Check for:
+      //  - first block next exists and
+      //  - second block next exists and
+      //  - current height is the same as second next block height and
+      //  - first block next height is lower than current height.
+      if(blocks[i + 1] != null && blocks[i + 2] != null && curHeight == blocks[i + 2].height && blocks[i + 1].height < curHeight)
+        // If all above is true, set first block next height to same as current height.
+        blocks[i + 1].height = curHeight;
+    });
   }
 
   void checkExtendPlatform() {
