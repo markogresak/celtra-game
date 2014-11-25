@@ -49,18 +49,7 @@ class Player {
   ///
   /// @param ctx Canvas context on which player is painted.
   /// @param baseLine Baseline (y = 0) of platform.
-  bool draw(CanvasRenderingContext2D ctx, int baseLine) {
-    // Update movement data.
-    bool result = movement.update();
-    // Update player entity.
-    playerEntity.update(movement.px);
-    // Set player paint color.
-    /// ctx.setFillColorRgb(255, 0, 0);
-    // Clear old player rect.
-    ctx.clearRect(ref.xOrigin - (w * 2), ref.yOrigin - movement.opy - (h * 4), w * 4, h * 4);
-    // Draw player on new position.
-    /// ctx.fillRect(ref.xOrigin, ref.yOrigin - movement.py - h, w, h);
-
+  void draw(CanvasRenderingContext2D ctx, int baseLine, int px, int py, int offset) {
     playerCtx.clearRect(0, 0, w, h);
     /// playerCtx.drawImage(playerImg, ref.xOrigin, ref.yOrigin - movement.py - h);
 
@@ -77,11 +66,17 @@ class Player {
 
     playerCtx.drawImage(playerImg, 0, 0);
 
-    ctx.drawImageScaled(playerCanvas, ref.xOrigin, ref.yOrigin - movement.py - h, w, h);
+    /// ctx.drawImageScaled(playerCanvas, ref.xOrigin + offset, ref.yOrigin - py - h, w, h);
+    ctx.drawImageScaled(playerCanvas, ref.xOrigin + offset, baseLine - py - h, w, h);
 
+    // Draw player name.
     ctx.setFillColorRgb(0, 0, 0);
-    ctx.fillText(userName, ref.xOrigin, ref.yOrigin - movement.py - h + 16);
+    ctx.fillText(userName, ref.xOrigin + offset, ref.yOrigin - py - h + 16);
 
-    return result;
+    // Update old movement data.
+    movement.opx = px;
+    movement.opy = py;
+
+    /// return result;
   }
 }

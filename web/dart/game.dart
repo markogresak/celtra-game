@@ -4,6 +4,7 @@ import 'dart:math';
 import 'player.dart';
 import 'platform.dart';
 import 'serverConnect.dart';
+import './shared/playerEntity.dart';
 // --------------------
 
 /// Main game class
@@ -70,42 +71,68 @@ class Game {
 
   /// Server sent an message event handler.
   void connectionMessage(MessageEvent e) {
-    PlayerEntity msgPe = new PlayerEntity.fromJson(e.data);
-    print("new player message:");
-    print(msgPe);
-    if(msgPe.message == null)
-      return;
-    if(msgPe.message == "newPlayer") {
-      // Add new player.
-      Player newPlayer = new Player(this, msgPe.userName, playerImg);
-      players.add(newPlayer);
-    }
-    else if (msgPe.message == "update") {
-      // Find the player and update it's location.
-      for(int i = 0; i < players.length; i++) {
-        if(players[i].userName == msgPe.userName) {
-          players[i].movement.px = msgPe.xCoordinate;
-          break;
-        }
+    try {
+      PlayerEntity msgPe = new PlayerEntity.fromJson(e.data);
+      print("new player message:");
+      print(msgPe);
+      if(msgPe.message == null)
+        return;
+      if(msgPe.message == "newPlayer") {
+        // Add new player.
+        newPlayer(msgPe);
+      }
+      else if (msgPe.message == "update") {
+        // Find the player and update it's location.
+        if(!updatePlayer(msgPe))
+          newPlayer(msgPe);
+        print("hegiht: ${player.movement.blockHeight(msgPe.xCoordinate)}");
+      }
+      else if (msgPe.message == "leave") {
+        removePlayer(msgPe);
+      }
+    } catch(e) {}
+  }
+
+  void newPlayer(PlayerEntity pe) {
+    Player newPlayer = new Player(this, pe.userName, playerImg);
+    newPlayer.movement.opx = 0;
+    newPlayer.movement.opy = 0;
+    players.add(newPlayer);
+  }
+
+  bool updatePlayer(PlayerEntity pe) {
+    bool found = false;
+    for(int i = 0; i < players.length; i++) {
+      if(players[i].userName == pe.userName) {
+        players[i].movement.px = pe.xCoordinate;
+        found = true;
+        break;
       }
     }
-    else if (msgPe.message == "leave") {
-      for(int i = 0; i < players.length; i++) {
-        if(players[i].userName == msgPe.userName) {
-          players.removeAt(i);
-          break;
-        }
+    return found;
+  }
+
+  void handleAttack(PlayerEntity pe) {
+
+  }
+
+  void removePlayer(PlayerEntity pe) {
+    for(int i = 0; i < players.length; i++) {
+      if(players[i].userName == pe.userName) {
+        players.removeAt(i);
+        break;
       }
     }
   }
 
   void attackNearbyPlayers(int xCoordinate) {
-    print("ATTACK!");
+    print("ATTACK");
   }
 
   /// Runs the game.
   void run() {
     // Send new player.
+    player.playerEntity.message = "newPlayer";
     connection.sendPlayer(player.playerEntity);
     // Set last time to 0 - draw was never called.
     last = 0;
@@ -134,20 +161,26 @@ class Game {
     }
   }
 
+  int xOriignDistance(int x) {
+    return
+  }
+
   /// Draws game contents on canvas.
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
-    /// ctx.setFillColorRgb(126,192,238);
-    ctx.setFillColorRgb(248, 248, 248);
     // Draw the player.
-    bool playerUpdated = player.draw(ctx, baseLine);
+    ctx.clearRect(0, 0, w, h);
+    bool playerUpdated = player.movement.update();
+    player.draw(ctx, baseLine, player.movement.px, player.movement.py, 0);
     // Send updated player.
-    connection.sendPlayer(player.playerEntity);
+    if(playerUpdated)
+      connection.sendPlayer(player.playerEntity);
     // Draw other players.
-    players.forEach((p) => p.draw(ctx, baseLine));
+      players.forEach( (p) {
+        p.draw(ctx, baseLine, p.movement.px, player.movement.blockHeight(p.movement.px) * 32, p.movement.px - player.movement.px);
+      });
     // Draw the platform.
-    platform.draw(ctx, baseLine, xOrigin - player.movement.px, playerUpdated);
-
+    platform.draw(ctx, baseLine, xOrigin - player.movement.px, playerUpdated, player.movement.px, player.movement.py);
   }
 }

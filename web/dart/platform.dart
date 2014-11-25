@@ -163,7 +163,7 @@ class Platform {
   ///
   /// @param ctx Canvas context on which platform is painted.
   /// @param baseLine Baseline (y = 0) of platform.
-  void draw(CanvasRenderingContext2D ctx, int baseLine, int xOrigin, bool playerUpdated) {
+  void draw(CanvasRenderingContext2D ctx, int baseLine, int xOrigin, bool playerUpdated, int px, int py) {
     // Check if platform or canvas has updated.
     if(playerUpdated || hasUpdated()) {
       // Check if player is over 1/2 of platform in current direction, if true,
@@ -194,7 +194,7 @@ class Platform {
       // Draw each block on created offCanvas element
       blocks.forEach((k,b) => b.draw(offCtx, h, baseLine, xOrigin));
 
-      player.draw(ctx, baseLine);
+      player.draw(ctx, baseLine, px, py, 0);
     }
 
     // Draw platform on offCanvas to provided (main) canvas.
