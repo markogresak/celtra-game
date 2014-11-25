@@ -99,6 +99,10 @@ class Game {
     }
   }
 
+  void attackNearbyPlayers(int xCoordinate) {
+    print("ATTACK!");
+  }
+
   /// Runs the game.
   void run() {
     // Send new player.

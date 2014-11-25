@@ -27,7 +27,7 @@ class Controls {
     keysLeft = new MovementKeyList<KeyCode>(movementRef.playerLeftBegin, movementRef.playerMoveStop);
     keysRight = new MovementKeyList<KeyCode>(movementRef.playerRightBegin, movementRef.playerMoveStop);
     keysJump = new MovementKeyList<KeyCode>(movementRef.playerJumpBegin, movementRef.playerJumpEnd);
-    keysAttack = new MovementKeyList<KeyCode>(movementRef.playerAttackBegin, movementRef.playerAttackEnd);
+    keysAttack = new MovementKeyList<KeyCode>(() => movementRef.playerAttackBegin(true), movementRef.playerAttackEnd);
     allKeys = new List<MovementKeyList>();
 
     // Add corresponding keys to list.
@@ -53,8 +53,12 @@ class Controls {
   }
 
   void __initTouchEvents() {
-    document.onTouchStart.listen(__onTouchStart);
-    document.onTouchEnd.listen(__onTouchEnd);
+    Element canvas = querySelector("canvas");
+    Element attackButton = querySelector("#attack");
+    canvas.onTouchStart.listen(__onTouchStart);
+    canvas.onTouchEnd.listen(__onTouchEnd);
+    canvas.onTouchStart.listen(__onTouchStart);
+    attackButton.onClick.listen((e) => movementRef.playerAttackBegin());
   }
 
   /// Handler function for onKeyDown listener.

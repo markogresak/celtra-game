@@ -29,8 +29,8 @@ class Movement {
   float ax, ay;
   /// Old position data.
   int opx, opy;
-  /// Jump state.
-  bool isJumping;
+  /// Jump and attack state.
+  bool isJumping, isAttacking;
   /// Controls object
   Controls controls;
 
@@ -52,6 +52,7 @@ class Movement {
     ay = ACCELERATION_GRAVITY;
     // Initialize player jumping state.
     isJumping = false;
+    isAttacking = false;
   }
 
   /// Returns _val_ constrained to _cap_ (works for positive and negative values).
@@ -97,13 +98,16 @@ class Movement {
   }
 
   /// Handler function, triggered when one of _keysAttack_ is pressed.
-  void playerAttackBegin() {
-    print("begin attack");
+  void playerAttackBegin([bool spaceKey = false]) {
+    if(!isAttacking || !spaceKey) {
+      isAttacking = true;
+      gameRef.attackNearbyPlayers(px);
+    }
   }
 
   /// Handler function, triggered when one of _keysAttack_ is released.
   void playerAttackEnd() {
-    print("end attack");
+    isAttacking = false;
   }
 
   /// Get block height on given x coordinate.
@@ -141,6 +145,9 @@ class Movement {
     //  prevent player getting stuck in ground.
     py = max(py + vy, blockHeight(px) * gameRef.player.w).floor();
     // Return whether player position has updated or not.
+
+    // Update player entity.
+    gameRef.player.playerEntity.update(px);
     return opx != px || opy != py;
   }
 }
