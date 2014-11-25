@@ -194,7 +194,7 @@ class Platform {
       // Draw each block on created offCanvas element
       blocks.forEach((k,b) => b.draw(offCtx, h, baseLine, xOrigin));
 
-      player.draw(ctx, baseLine, px, py, 0);
+      player.draw(ctx, baseLine, px, py, 0, true);
     }
 
     // Draw platform on offCanvas to provided (main) canvas.
