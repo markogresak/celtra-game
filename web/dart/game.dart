@@ -197,9 +197,13 @@ class Game {
   ///
   /// @param time Time passed since game was started.
   void __draw(double time) {
-    // Draw the player.
+    // Check if player is dead.
+    bool isDead = player.hitpoints.checkIfDead();
+    // Clear whole canvas.
     ctx.clearRect(0, 0, w, h);
-    bool playerUpdated = player.movement.update();
+    // Update player.
+    bool playerUpdated = player.movement.update() || isDead;
+    // Draw player.
     player.draw(ctx, baseLine, player.movement.px, player.movement.py, 0, true);
     // Send updated player.
     if(playerUpdated)

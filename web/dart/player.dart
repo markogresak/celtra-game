@@ -43,19 +43,22 @@ class Player {
     // Initialize canvas and canvas context.
     playerCanvas = new CanvasElement(width: w, height: h);
     playerCtx = playerCanvas.context2D;
-
-    // Initialize player.
-    initPlayer();
+    // Initialize movement object.
+    movement = new Movement(ref);
+    // Initialize hitpoints object.
+    hitpoints = new Hitpoints(onDeath);
+    // Initialize PlayerEntity object.
+    playerEntity = new PlayerEntity(movement.px, userName);
   }
 
   /// Player Initialization, called when game is started and upon death.
   void initPlayer() {
-    // Initialize movement object.
-    movement = new Movement(ref);
-    // Initialize player entity.
-    playerEntity = new PlayerEntity(movement.px, userName);
+    // Reinitialize movement object.
+    movement.resetMovement();
     // Initialize hitpoints.
-    hitpoints = new Hitpoints(onDeath);
+    hitpoints.revive();
+    // Initialize player entity.
+    playerEntity.xCoordinate = movement.px;
   }
 
   /// Halder function, gets called when player dies.
@@ -137,6 +140,10 @@ class Hitpoints {
   /// Default constructor, required death handler function.
   Hitpoints(this.deathHandler) {
     // Initialize hitpoints.
+    revive();
+  }
+
+  void revive() {
     hp = STARTING_HITPOINTS;
   }
 
@@ -151,15 +158,18 @@ class Hitpoints {
     // Substract hitpoints.
     hp -= amount;
     // Check if player is dead.
-    checkIfDead();
+    /// checkIfDead();
   }
 
   /// Checks if player is dead.
-  void checkIfDead() {
+  bool checkIfDead() {
     // Check if hp is at or below zero.
-    if(hp <= 0)
+    if(hp <= 0) {
       // Call death handler function.
       deathHandler();
+      return true;
+    }
+    return false;
   }
 
   /// Draw hitpoints bar.
