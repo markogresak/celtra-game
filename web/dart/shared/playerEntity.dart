@@ -8,10 +8,6 @@ class PlayerEntity {
 
   PlayerEntity(int this.xCoordinate, String this.userName);
 
-  fromServer(String this.userName) {
-    message = "newPlayer";
-  }
-
   PlayerEntity.fromJson(var json) {
     try {
       Map data = JSON.decode(json);
