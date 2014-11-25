@@ -58,7 +58,7 @@ class Controls {
     canvas.onTouchStart.listen(__onTouchStart);
     canvas.onTouchEnd.listen(__onTouchEnd);
     canvas.onTouchStart.listen(__onTouchStart);
-    attackButton.onClick.listen((e) => movementRef.playerAttackBegin());
+    attackButton.onClick.listen((e) => movementRef.playerAttackBegin(false));
   }
 
   /// Handler function for onKeyDown listener.
@@ -86,6 +86,10 @@ class Controls {
     if (e.touches.length > 0) {
       // Get touch location.
       int touchLocation = e.touches[0].page.x;
+      if(isAttackTouch(touchLocation, e.touches[0].page.y)) {
+        movementRef.playerAttackBegin(false);
+        return;
+      }
       // Calculate screen half.
       int screenHalf = (movementRef.gameRef.w / 2).floor();
       // Determine player movement location.
@@ -103,6 +107,21 @@ class Controls {
   void __onTouchEnd(TouchEvent e) {
     // Stop player movement.
     movementRef.playerMoveStop();
+  }
+
+  /// Check if location represented with x and y is in attack button location.
+  bool isAttackTouch(int x, int y) {
+    // Get canvas width and hegiht.
+    int canvasWidth = movementRef.gameRef.w;
+    int canvasHeight = movementRef.gameRef.h;
+
+    // Check if x coordinate is in left 25% of canvas and y coordinate is in lower 20% of canvas.
+    if((x < canvasWidth * .25) && (y > canvasHeight * .8))
+      // If location is correct, return true (execute attack rather than move).
+      return true;
+
+    // If not, return false (touch was not in attack section).
+    return false;
   }
 }
 
