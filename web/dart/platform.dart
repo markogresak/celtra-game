@@ -176,9 +176,6 @@ class Platform {
       // Update block count.
       blockCount = blocks.length;
 
-      // Clear original canvas.
-      ctx.clearRect(0, 0, w, h);
-
       // Create new canvas element for pre-painting blocks on platform.
       if(offCanvas != null) {
         offCanvas.width = w;
