@@ -33,29 +33,52 @@ class PlayerManager {
       return;
     if(msgPe.message == "newPlayer") {
       // Add new player.
-      players[msgPe] = socket;
+      newPlayer(msgPe, socket);
     }
     else if(msgPe.message == "update") {
       // Find the player and update it's location.
-      players.forEach((pe, ws) {
-        if(pe.userName == msgPe.userName) {
-          pe.xCoordinate = msgPe.xCoordinate;
-        }
-      });
+      if(!updatePlayer(msgPe))
+        newPlayer(msgPe, socket);
     }
     // Broadcast new/updated player to others.
     broadcastPlayer(msgPe);
   }
 
-  /// Broadcast given player entity to all other players.
-  void broadcastPlayer(PlayerEntity playerPe) {
-    String peJson = playerPe.toJson();
+  void newPlayer(PlayerEntity pe, WebSocket socket) {
+    players[pe] = socket;
+  }
+
+  bool updatePlayer(PlayerEntity msgPe) {
+    bool found = false;
     players.forEach((pe, ws) {
-      if(pe.userName != playerPe.userName) {
-        print("broadcast: $peJson");
-        ws.add(peJson);
+      if(!found && pe.userName == msgPe.userName) {
+        pe.xCoordinate = msgPe.xCoordinate;
+        found = true;
       }
     });
+    return found;
+  }
+
+  void removePlayer() {
+
+  }
+
+  /// Broadcast given player entity to all other players.
+  void broadcastPlayer(PlayerEntity playerPe) {
+    try {
+      String peJson = playerPe.getJson();
+      print("broadcastPlayer(), ${players.length}");
+      players.forEach((pe, ws) {
+        print("player $pe");
+        if(pe.userName != playerPe.userName) {
+          print("broadcast: $peJson");
+          ws.add(peJson);
+        }
+      });
+    } catch(e) {
+      prine(e);
+      print("broadcast for ${playerPe.userName} failed.");
+    }
   }
 
   /// Player disconnected handler.
