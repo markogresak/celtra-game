@@ -41,6 +41,10 @@ class Movement {
   Movement(this.gameRef) {
     // Initialize controls object.
     controls = new Controls(this);
+    resetMovement();
+  }
+
+  void resetMovement() {
     // Initialize player old and curent locations.
     opx = px = 0;
     opx = py = 0;
