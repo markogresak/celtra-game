@@ -27,10 +27,10 @@ canvas {
 #attack {
   display: none;
   position: absolute;
-  bottom: 5px;
-  left: 5px;
-  width: 20%;
-  height: 15%;
+  bottom: -5px;
+  left: -5px;
+  width: 25%;
+  height: 20%;
   border: none;
   border-radius: 4px;
   background: #8A0707;
@@ -78,4 +78,13 @@ canvas {
 
 :-ms-input-placeholder {
    color: #fff;
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
