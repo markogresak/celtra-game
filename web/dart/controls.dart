@@ -53,12 +53,10 @@ class Controls {
   }
 
   void __initTouchEvents() {
-    Element canvas = querySelector("canvas");
-    Element attackButton = querySelector("#attack");
-    canvas.onTouchStart.listen(__onTouchStart);
-    canvas.onTouchEnd.listen(__onTouchEnd);
-    canvas.onTouchStart.listen(__onTouchStart);
-    attackButton.onClick.listen((e) => movementRef.playerAttackBegin(false));
+    document.onTouchStart.listen(__onTouchStart);
+    document.onTouchEnd.listen(__onTouchEnd);
+    /// Element attackButton = querySelector("#attack");
+    /// attackButton.onClick.listen((e) => movementRef.playerAttackBegin(false));
   }
 
   /// Handler function for onKeyDown listener.
