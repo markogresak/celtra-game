@@ -52,14 +52,16 @@ class Game {
     this.ctx = gameCanvas.context2D;
     // Calculate interval based on fps.
     this.interval = 1000 / fps;
-    // Get player image.
-    playerImg = new ImageElement(src: "../img/player.png", width: 32, height: 64);
-    // Initialize platform object.
-    this.platform = new Platform(player, "Test Game");
     // Initialize other players list.
     players = new List<Player>();
+    // Get player image.
+    playerImg = new ImageElement(src: "../img/player.png", width: 32, height: 64);
+    // Initialize new character object.
+    this.player = new Player(this, username, playerImg);
+    // Initialize platform object.
+    this.platform = new Platform(player, "Test Game");
     // Initialize connection
-    connection = new Connection(connectionOpen, connectionMessage);
+    this.connection = new Connection(connectionOpen, connectionMessage);
   }
 
   /// Connected to server event handler.
@@ -161,8 +163,9 @@ class Game {
 
   /// Runs the game.
   void run() {
-    // Initialize new character object.
-    this.player = new Player(this, username, playerImg);
+    // Send new player location.
+    player.playerEntity.message = "newPlayer";
+    connection.sendPlayer(player.playerEntity);
     // Set last time to 0 - draw was never called.
     last = 0;
     // Request animation frame for game loop.

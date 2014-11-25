@@ -13,28 +13,30 @@ void main() {
   final form = querySelector("#form-login");
   // Set form submit event listener.
   form.onSubmit.listen((Event e) {
+    // Prevent form from sending.
+    e.preventDefault();
+    // Get username element.
+    Element usernameEl = querySelector("#username");
+    // Return if username element wasn't found.
+    if(usernameEl == null)
+      return false;
+    // Get value from username element.
+    String username = usernameEl.value;
+    // Return if username element was empty.
+    if(username.trim().length == 0)
+      return false;
+
     try {
-      // Prevent form from sending.
-      e.preventDefault();
-      // Get username element.
-      Element usernameEl = querySelector("#username");
-      // Return if username element wasn't found.
-      if(usernameEl == null)
-        return false;
-      // Get value from username element.
-      String username = usernameEl.value;
-      // Return if username element was empty.
-      if(username.trim().length == 0)
-        return false;
       // Hide login form.
       querySelector(".login-container").style.display = "none";
       // Show game canvas container.
       querySelector(".container").style.display = "block";
       // Show attack button (shown on mobile only).
       querySelector(".mobile #attack").style.display = "block";
-      // Start game with entered username.
-      startGame(username);
     } catch (ex) {}
+
+    // Start game with entered username.
+    startGame(username);
     return false;
   });
 }

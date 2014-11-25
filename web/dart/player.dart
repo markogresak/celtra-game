@@ -54,8 +54,6 @@ class Player {
     movement = new Movement(ref);
     // Initialize player entity.
     playerEntity = new PlayerEntity(movement.px, userName);
-    // Send new player location.
-    ref.connection.sendPlayer(playerEntity);
     // Initialize hitpoints.
     hitpoints = new Hitpoints(onDeath);
   }
