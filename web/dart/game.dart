@@ -125,8 +125,14 @@ class Game {
     }
   }
 
-  void attackNearbyPlayers(int xCoordinate) {
-    print("ATTACK");
+  /// Send attack message.
+  void attackNearbyPlayers() {
+    // Create new PlayerEntity with current player location and player username.
+    PlayerEntity attackPe = new PlayerEntity(player.movement.px, player.userName);
+    // Mark message as attack.
+    attackPe.message = "attack";
+    // Send message to server.
+    connection.sendPlayer(attackPe);
   }
 
   /// Runs the game.

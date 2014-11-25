@@ -101,7 +101,7 @@ class Movement {
   void playerAttackBegin([bool spaceKey = false]) {
     if(!isAttacking || !spaceKey) {
       isAttacking = true;
-      gameRef.attackNearbyPlayers(px);
+      gameRef.attackNearbyPlayers();
     }
   }
 
