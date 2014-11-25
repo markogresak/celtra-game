@@ -12,13 +12,21 @@ void main() {
   final form = querySelector("#form-login");
   form.onSubmit.listen((Event e) {
     e.preventDefault();
-    String username = querySelector("#username").value;
+    Element usernameEl = querySelector("#username");
+    if(usernameEl == null)
+     return false;
+    String username = usernameEl.value;
     if(username.trim().length == 0)
       return false;
 
-    querySelector(".login-container").style.display = "none";
-    querySelector(".container").style.display = "block";
+    try {
+      querySelector(".login-container").style.display = "none";
+      querySelector(".container").style.display = "block";
+      querySelector(".mobile #attack").style.display = "block";
+    } catch (ex) {}
+
     startGame(username);
+    return false;
   });
 }
 
